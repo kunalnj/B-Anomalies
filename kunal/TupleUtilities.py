@@ -89,7 +89,7 @@ def get_DOCA(disttool, track1, track2):
 
 def get_vertex(vfittool, particle1, particle2):
   '''
-  Compute best vertex between two particle LOFs
+  Compute best vertex between two particles
   '''
   vertex = gbl.LHCb.Vertex()
   chi2 = array.array("d", [0])

@@ -240,7 +240,7 @@ class Bs2Phi3TauTau(Algo):
     mu_plus = recomuplus[0]
     mu_minus = recomuminus[0]
 
-    # Calculate DOCA and corresponding chi2 between phi3 and mu LOFs 
+    # Calculate DOCA and corresponding chi2 between phi3 and mu
 
     doca_mu_plus, doca_chi2_mu_plus  = get_DOCA(self.disttool, mu_plus, _phi)
     doca_mu_minus, doca_chi2_mu_minus = get_DOCA(self.disttool, mu_minus, _phi)
@@ -251,7 +251,7 @@ class Bs2Phi3TauTau(Algo):
 
     # Tau FD calculation:
 
-    # 1) Determine the best vertex between phi3 and mu LOFs (VFIT)
+    # 1) Determine the best vertex between phi3 and mu (VFIT) (displays warning when PV is not related - very rare)
                         
     vertexfit_plus = get_vertex(self.vfittool, mu_plus, _phi)[0]
     vertexfit_minus = get_vertex(self.vfittool, mu_minus, _phi)[0]

@@ -148,7 +148,7 @@ class Bs2Phi3TauTau(Algo):
           print 'Failed to make particle'
           continue
         phi3Cand.append(recophi3)
-        phi3arrayadder.add(recophi3, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool)
+        phi3arrayadder.add(recophi3, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool) #added vfittool
 
     #get the tau+ info
     tauplusCand       = []
@@ -167,7 +167,7 @@ class Bs2Phi3TauTau(Algo):
 
     recomuplus = [protoToParticle(p, muplus.particleID().pid()) for p in findProtos(muplus, protos)]
     for p in recomuplus:
-      muplusarrayadder.add(p, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool)
+      muplusarrayadder.add(p, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool) #added vfittool
 
     #This is where you want to do interesting things to the tau....
     persist = []
@@ -193,7 +193,7 @@ class Bs2Phi3TauTau(Algo):
 
     recomuminus = [protoToParticle(p, muminus.particleID().pid()) for p in findProtos(muminus, protos)]
     for p in recomuminus:
-      muminusarrayadder.add(p, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool)
+      muminusarrayadder.add(p, pvs=pvs, disttool=self.disttool, vfittool = self.vfittool, triggertool=self.trigtool, pvtool=self.pvtool) #added vfittool
 
     for rtc in recomuminus:
       recotauminus  = reconstructTau(rtc, tauminus.particleID(), persist)
@@ -232,25 +232,31 @@ class Bs2Phi3TauTau(Algo):
           Bsarrayadder.add(recoBs, pvs=pvs, disttool=self.disttool, triggertool=self.trigtool, pvtool=self.pvtool)
 
 
-    #DOCA, IP, FD, VFIT:
+    ####################################### DOCA, IP, FD ####################################################
+
+    # choose the particles for use
 
     _phi = recophi3[0]
-
     mu_plus = recomuplus[0]
     mu_minus = recomuminus[0]
 
-    doca_mu_plus = getdoca(self.disttool, mu_plus, _phi)[0]
-    doca_mu_minus = getdoca(self.disttool, mu_minus, _phi)[0]
-    doca_chi2_mu_plus = getdoca(self.disttool, mu_plus, _phi)[1]
-    doca_chi2_mu_minus = getdoca(self.disttool, mu_minus, _phi)[1]
+    # Calculate DOCA and corresponding chi2 between phi3 and mu LOFs 
 
-    ip_mu_plus = getIp(mu_plus, _phi.endVertex(), self.disttool)[0]
-    ip_mu_minus = getIp(mu_minus, _phi.endVertex(), self.disttool)[0]
-    ip_chi2_mu_plus = getIp(mu_plus, _phi.endVertex(), self.disttool)[1]
-    ip_chi2_mu_minus = getIp(mu_minus, _phi.endVertex(), self.disttool)[1]
-                           
+    doca_mu_plus, doca_chi2_mu_plus  = getdoca(self.disttool, mu_plus, _phi)
+    doca_mu_minus, doca_chi2_mu_minus = getdoca(self.disttool, mu_minus, _phi)[0]
+
+    # Calculate IP and corresponding chi2 between
+    ip_mu_plus, ip_chi2_mu_plus = getIp(mu_plus, _phi.endVertex(), self.disttool)
+    ip_mu_minus, ip_chi2_mu_minus = getIp(mu_minus, _phi.endVertex(), self.disttool)
+
+    # Tau FD calculation:
+
+    # 1) Determine the best vertex between phi3 and mu LOFs (VFIT)
+                        
     vertexfit_plus = getvertex(self.vfittool, mu_plus, _phi)[0]
     vertexfit_minus = getvertex(self.vfittool, mu_minus, _phi)[0]
+
+    # 2) Get VFIT vertex coords (Optional, for visualisation)
 
     vfit_plus_x = vertexfit_plus.position().x()
     vfit_plus_y = vertexfit_plus.position().y()
@@ -260,13 +266,14 @@ class Bs2Phi3TauTau(Algo):
     vfit_minus_y = vertexfit_minus.position().y()
     vfit_minus_z = vertexfit_minus.position().z()
 
-    tau_plus = recotauplus[0]
-    tau_minus = recotauminus[0]
+    # 3) Calculate tau FD : distance between phi end vertex and VFIT vertex
 
     fd_tau_plus = getFd(vertexfit_plus, _phi.endVertex(), self.disttool)[0]
     fd_tau_minus = getFd(vertexfit_minus, _phi.endVertex(), self.disttool)[0]
     fd_chi2_tau_plus = getFd(vertexfit_plus, _phi.endVertex(), self.disttool)[1]
     fd_chi2_tau_minus = getFd(vertexfit_minus, _phi.endVertex(), self.disttool)[1]
+        
+    #########################################################################################################
 
     print 'Reconstruction over. Found:'
     print len(recoKp), 'K+'
@@ -275,27 +282,6 @@ class Bs2Phi3TauTau(Algo):
     print len(tauplusCand), 'tau+'
     print len(tauminusCand), 'tau-'
     print len(BsCand), 'B_s'
-
-    #DOCA:
-    
-    print doca_mu_plus, "doca mu +"
-    print doca_chi2_mu_plus, "doca chi2 mu +"
-    print doca_mu_minus, "doca mu -"
-    print doca_chi2_mu_minus, "doca chi2 mu -"
-    
-    #IP:
-
-    print ip_mu_plus, "ip mu +"
-    print ip_chi2_mu_plus, "ip chi2 mu +"
-    print ip_mu_minus, "ip mu -"
-    print ip_chi2_mu_minus, "ip chi2 mu -"
-
-    # #FD:
-
-    print fd_tau_plus, "fd mu +"
-    print fd_chi2_tau_plus, "fd chi2 mu +"
-    print fd_tau_minus, "fd mu -"
-    print fd_chi2_tau_minus, "fd chi2 mu -"
 
     #Now to add everything to the output tuple
 
@@ -343,7 +329,7 @@ class Bs2Phi3TauTau(Algo):
     self.tuple.column("FD_tau_minus", fd_tau_minus)
     self.tuple.column("FD_chi2_tau_minus", fd_chi2_tau_minus)
     
-    # append vfits:
+    # append VFIT coords:
     
     self.tuple.column("VFIT_plus_x", vfit_plus_x)
     self.tuple.column("VFIT_plus_y", vfit_plus_y)

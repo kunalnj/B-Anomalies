@@ -58,8 +58,6 @@ TriggerLines = [
 
 ]
 
-# Wrappers to calculate respective quantities:
-
 def getIp(particle, pv, disttool):
   '''
   Compute the IP & chi2
@@ -98,7 +96,6 @@ def getvertex(vfittool, particle1, particle2):
 
 
 #Make a dictionary containing all the momentum variables
-
 def getMomentumVariables(momentum=None,**options):
   if not momentum:
     return ['M', 'PX', 'PY', 'PZ', 'E', 'P', 'PT', 'ETA', 'PHI']
@@ -241,7 +238,7 @@ def getPIDVariables(proto=None,**options):
 #Make a dictionary containing all the best primary vertex variables variables
 def getBestPVVariables(particle=None, **options):
   if not particle:
-    return ['PV', 'FDCHI2']
+    return ['PV', 'FD', 'FDCHI2']  #added 'FD'
   vars = {}
   try:
     table = options['pvtool'].relatedPVs(particle, options['pvs'])
@@ -250,16 +247,21 @@ def getBestPVVariables(particle=None, **options):
       raise
     bestVertex = relPVs.back().to()
     vars['PV'] = options['pvs'].index(bestVertex)
-    vars['FDCHI2'] = getfdChi2(particle, bestVertex, options['disttool'])
+    _fd_chi2 = getFd(particle.endVertex(), bestVertex, options['disttool'])[1]
+    _fd = getFd(particle.endVertex(), bestVertex, options['disttool'])[0]
+    vars['FDCHI2'] = _fd_chi2
+    vars['FD'] = _fd
+
   except:
     vars['PV']     = -1
     vars['FDCHI2'] = BadFloat
+    vars['FD'] = BadFloat
   return vars
 
 #Make a dictionary containing all the 'Standard' variables
 def getStandardVariables(particle=None,**options):
   if not particle:
-    return getMomentumVariables() + getVertexVariables() + getPIDVariables() + ['ID', 'MINIPCHI2', 'TRACKCHI2', 'TRACKCHI2NDOF', 'TRACKNDOF', 'CHARGE', 'ghostProb', 'RefPoint_X', 'RefPoint_Y', 'RefPoint_Z'] + getBestPVVariables() + getTriggerVariables()
+    return getMomentumVariables() + getVertexVariables() + getPIDVariables() + ['ID', 'IP_0', 'IPCHI2_0', 'MINIP', 'MINIPCHI2', 'TRACKCHI2', 'TRACKCHI2NDOF', 'TRACKNDOF', 'CHARGE', 'ghostProb', 'RefPoint_X', 'RefPoint_Y', 'RefPoint_Z'] + getBestPVVariables() + getTriggerVariables() #added 'IP'
   vars = getMomentumVariables(particle.momentum())
   vars.update(getVertexVariables(particle.endVertex() if particle.endVertex() else -1))
   vars.update(getPIDVariables(particle.proto() if particle.proto() else -1))
@@ -267,9 +269,18 @@ def getStandardVariables(particle=None,**options):
   vars.update(getTriggerVariables(particle, **options))
   vars['ID'] = particle.particleID().pid()
   if 'pvs' in options and len(options['pvs']) > 0 and 'disttool' in options:
-    vars['MINIPCHI2'] = min([getIpChi2(particle,testpv,options['disttool']) for testpv in options['pvs']])
+    _ip = [getIp(particle,testpv,options['disttool'])[0] for testpv in options['pvs']] #Added
+    _ip_chi2 = [getIp(particle,testpv,options['disttool'])[1] for testpv in options['pvs']] #Added
+    vars['MINIPCHI2'] = min(_ip_chi2)
+    vars['IP_0'] = _ip[0]
+    vars['IPCHI2_0'] = _ip_chi2[0]
+    if np.isnan(_ip_chi2).any():
+      vars['MINIP'] = np.nan
+    else:
+      vars['MINIP'] = np.array(_ip)[np.where(np.array(_ip_chi2) == min(np.array(_ip_chi2)))[0][0]]
   else:
     vars['MINIPCHI2'] = BadFloat
+    vars['MINIP'] = BadFloat
   if particle.proto():
     vars['TRACKCHI2']     = particle.proto().track().chi2()
     vars['TRACKCHI2NDOF'] = particle.proto().track().chi2PerDoF()
@@ -384,3 +395,5 @@ class StandardVertexArrayVaraiables(GenericArrayVariables):
 class StandardResidualArrayVariables(GenericArrayVariables):
   def __init__(self, maxentries):
     GenericArrayVariables.__init__(self, maxentries, getClusterResidualVariables)
+
+

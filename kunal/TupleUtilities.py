@@ -60,7 +60,7 @@ TriggerLines = [
 
 # Wrappers to calculate respective quantities:
 
-def getIp(particle, pv, disttool):
+def get_IP(particle, pv, disttool):
   '''
   Compute the IP & chi2
   '''
@@ -69,7 +69,7 @@ def getIp(particle, pv, disttool):
   disttool.distance(particle, pv, ip,chi2, False)
   return ip[0], chi2[0]
 
-def getFd(endv, pv, disttool):
+def get_FD(endv, pv, disttool):
   '''
   Compute the FD & chi2
   '''
@@ -78,7 +78,7 @@ def getFd(endv, pv, disttool):
   disttool.distance(endv, pv, fd, chi2)
   return fd[0], chi2[0]
 
-def getdoca(disttool, track1, track2):
+def get_DOCA(disttool, track1, track2):
   '''
   Compute DOCA & chi2
   '''
@@ -87,7 +87,7 @@ def getdoca(disttool, track1, track2):
   disttool.distance(track1, track2, doca, chi2)
   return doca[0], chi2[0]
 
-def getvertex(vfittool, particle1, particle2):
+def get_vertex(vfittool, particle1, particle2):
   '''
   Compute best vertex between two particle LOFs
   '''
@@ -267,7 +267,7 @@ def getStandardVariables(particle=None,**options):
   vars.update(getTriggerVariables(particle, **options))
   vars['ID'] = particle.particleID().pid()
   if 'pvs' in options and len(options['pvs']) > 0 and 'disttool' in options:
-    vars['MINIPCHI2'] = min([getIpChi2(particle,testpv,options['disttool']) for testpv in options['pvs']])
+    vars['MINIPCHI2'] = min([get_IP(particle,testpv,options['disttool'])[1] for testpv in options['pvs']])
   else:
     vars['MINIPCHI2'] = BadFloat
   if particle.proto():

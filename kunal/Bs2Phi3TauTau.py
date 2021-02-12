@@ -242,19 +242,19 @@ class Bs2Phi3TauTau(Algo):
 
     # Calculate DOCA and corresponding chi2 between phi3 and mu LOFs 
 
-    doca_mu_plus, doca_chi2_mu_plus  = getdoca(self.disttool, mu_plus, _phi)
-    doca_mu_minus, doca_chi2_mu_minus = getdoca(self.disttool, mu_minus, _phi)[0]
+    doca_mu_plus, doca_chi2_mu_plus  = get_DOCA(self.disttool, mu_plus, _phi)
+    doca_mu_minus, doca_chi2_mu_minus = get_DOCA(self.disttool, mu_minus, _phi)
 
     # Calculate IP and corresponding chi2 between
-    ip_mu_plus, ip_chi2_mu_plus = getIp(mu_plus, _phi.endVertex(), self.disttool)
-    ip_mu_minus, ip_chi2_mu_minus = getIp(mu_minus, _phi.endVertex(), self.disttool)
+    ip_mu_plus, ip_chi2_mu_plus = get_IP(mu_plus, _phi.endVertex(), self.disttool)
+    ip_mu_minus, ip_chi2_mu_minus = get_IP(mu_minus, _phi.endVertex(), self.disttool)
 
     # Tau FD calculation:
 
     # 1) Determine the best vertex between phi3 and mu LOFs (VFIT)
                         
-    vertexfit_plus = getvertex(self.vfittool, mu_plus, _phi)[0]
-    vertexfit_minus = getvertex(self.vfittool, mu_minus, _phi)[0]
+    vertexfit_plus = get_vertex(self.vfittool, mu_plus, _phi)[0]
+    vertexfit_minus = get_vertex(self.vfittool, mu_minus, _phi)[0]
 
     # 2) Get VFIT vertex coords (Optional, for visualisation)
 
@@ -268,10 +268,8 @@ class Bs2Phi3TauTau(Algo):
 
     # 3) Calculate tau FD : distance between phi end vertex and VFIT vertex
 
-    fd_tau_plus = getFd(vertexfit_plus, _phi.endVertex(), self.disttool)[0]
-    fd_tau_minus = getFd(vertexfit_minus, _phi.endVertex(), self.disttool)[0]
-    fd_chi2_tau_plus = getFd(vertexfit_plus, _phi.endVertex(), self.disttool)[1]
-    fd_chi2_tau_minus = getFd(vertexfit_minus, _phi.endVertex(), self.disttool)[1]
+    fd_tau_plus, fd_chi2_tau_plus = get_FD(vertexfit_plus, _phi.endVertex(), self.disttool)
+    fd_tau_minus, fd_chi2_tau_minus = get_FD(vertexfit_minus, _phi.endVertex(), self.disttool)
         
     #########################################################################################################
 

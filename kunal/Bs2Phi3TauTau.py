@@ -38,7 +38,7 @@ class Bs2Phi3TauTau(Algo):
     gaudi = appMgr() 
     self.trigtool = gaudi.toolsvc().create('TriggerTisTos', interface='ITriggerTisTos')
     self.disttool = gaudi.toolsvc().create('LoKi::DistanceCalculator',interface='IDistanceCalculator')
-    self.vfittool = gaudi.toolsvc().create('LoKi::VertexFitter', interface='IVertexFit')
+    self.vfittool = gaudi.toolsvc().create('LoKi::VertexFitter', interface='IVertexFit') #needs to be included in arrayadders if to be used (as in line 151)
     self.combtool = gaudi.toolsvc().create('OfflineVertexFitter', interface='IParticleCombiner')
     self.pvtool   = gaudi.toolsvc().create('P2PVWithIPChi2',interface='IRelatedPVFinder')
 
@@ -246,6 +246,7 @@ class Bs2Phi3TauTau(Algo):
     doca_mu_minus, doca_chi2_mu_minus = get_DOCA(self.disttool, mu_minus, _phi)
 
     # Calculate IP and corresponding chi2 between
+
     ip_mu_plus, ip_chi2_mu_plus = get_IP(mu_plus, _phi.endVertex(), self.disttool)
     ip_mu_minus, ip_chi2_mu_minus = get_IP(mu_minus, _phi.endVertex(), self.disttool)
 

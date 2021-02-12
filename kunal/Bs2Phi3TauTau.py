@@ -38,7 +38,7 @@ class Bs2Phi3TauTau(Algo):
     gaudi = appMgr() 
     self.trigtool = gaudi.toolsvc().create('TriggerTisTos', interface='ITriggerTisTos')
     self.disttool = gaudi.toolsvc().create('LoKi::DistanceCalculator',interface='IDistanceCalculator')
-    self.vfittool = gaudi.toolsvc().create('LoKi::VertexFitter', interface='IVertexFit') #needs to be included in arrayadders if to be used (as in line 151)
+    self.vfittool = gaudi.toolsvc().create('LoKi::VertexFitter', interface='IVertexFit') # needs to be included in arrayadders if to be used (as in line 151)
     self.combtool = gaudi.toolsvc().create('OfflineVertexFitter', interface='IParticleCombiner')
     self.pvtool   = gaudi.toolsvc().create('P2PVWithIPChi2',interface='IRelatedPVFinder')
 
@@ -253,6 +253,7 @@ class Bs2Phi3TauTau(Algo):
     # Tau FD calculation:
 
     # 1) Determine the best vertex between phi3 and mu (VFIT) (displays warning when PV is not related - very rare)
+    # vfittool needs to be included in arrayadders if to be used (as in line 151)
                         
     vertexfit_plus = get_vertex(self.vfittool, mu_plus, _phi)[0]
     vertexfit_minus = get_vertex(self.vfittool, mu_minus, _phi)[0]

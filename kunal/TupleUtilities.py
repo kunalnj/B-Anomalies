@@ -250,7 +250,7 @@ def getBestPVVariables(particle=None, **options):
       raise
     bestVertex = relPVs.back().to()
     vars['PV'] = options['pvs'].index(bestVertex)
-    vars['FDCHI2'] = getfdChi2(particle, bestVertex, options['disttool'])
+    vars['FDCHI2'] = get_FD(particle.endVertex(), bestVertex, options['disttool'])[1]
   except:
     vars['PV']     = -1
     vars['FDCHI2'] = BadFloat

@@ -8,6 +8,10 @@ Changes were made to TupleUtilities.py and Bs2Phi3TauTau.py. TupleUtilities.py n
 
 The three defined functions are then used in Bs2Phi3TauTau.py to find the required quantities and simply appended to the resultant tuple.
 
+The functions get_IP and get_DOCA are directly acted on the particles/tracks/vertices we want distances from. For the FD, a vertex between the muon and phi3 is first found using get_vertex and then the tau FD is taken to be the distance between this newly found vertex and phi3.endVertex(). 
+
+All changes are noted in the respective .py files.
+
 ## Output
 
 The output tuple is the same name as the .dst Brunel input file, in our case this was tested on /vols/lhcb/masmith/gangadir_bs2kktautau/workspace/mesmith/LocalXML/59/0/output/Brunel.dst. An example output .root file is the Bender.root file.

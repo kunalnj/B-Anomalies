@@ -13,11 +13,11 @@ The functions get_IP and get_DOCA are directly acted on the particles/tracks/ver
 All changes are noted in the respective .py files.
 
 ## Running
-
+```
 lb-run -c best Bender/v35r6 bash
 
 python BenderAnalysis.py /vols/lhcb/masmith/gangadir_bs2kktautau/workspace/mesmith/LocalXML/59/0/output/Brunel.dst
-
+```
 ## Output
 
 The output tuple is the same name as the .dst Brunel input file, in our case this was tested on /vols/lhcb/masmith/gangadir_bs2kktautau/workspace/mesmith/LocalXML/59/0/output/Brunel.dst. An example output .root file is the Bender.root file.
